@@ -215,17 +215,23 @@ if __name__ == '__main__':
 ### 1.5 Static methods and class methods
 
 * Static methods
-	* use `@staticmethod` decorator to mark a method，Similar to tools methods, with no parameter requirements.
+	* use `@staticmethod` decorator to mark a method，Similar to tools methods, with no class parameter.
 	* can called by Class or Instance
 * Class methods
 	* use `@classmethod` decorator to mark a method. Receives the class as the first parameter, usually named `cls`. It can access and modify the class's state.(like modify class variable)
 	* can called by Class or Instance
 
 ```python
+"""
+Static methods
+    * Similar to tools methods
+    * no class parameter
+"""
 from math import sqrt
 
 class Triangle(object):            
 
+    __slots__ = ('_a', '_b', '_c')
     def __init__(self, a, b, c):
         self._a = a
         self._b = b
@@ -248,9 +254,7 @@ def main():
     if Triangle.is_valid(a, b, c):
         t = Triangle(a, b, c)
         print(t.perimeter())
-        # print(Triangle.perimeter(t))
         print(t.area())
-        # print(Triangle.area(t))
     else:
         print('无法构成三角形.')
 if __name__ == '__main__':
@@ -258,8 +262,10 @@ if __name__ == '__main__':
 ```
 
 ```python
+"""
+Class methods
+"""
 from time import time, localtime, sleep
-
 
 class Clock(object):
     """Digit Clock"""
@@ -319,12 +325,73 @@ In object-oriented programming, class is a blueprint for objects that we want to
 	- For example, the relation between cat, dog, and its general class, which is animal.
 	- ![400](assets/note_image/image-20240902173207028.png)
 
+![600](assets/note_image/image-20240902185831174.png)
+
+### 1.7 Encapsulation
+
+Hide all implementation details that can be hidden, and only expose simple programming interfaces to the outside world.
+
+After we create the object, we only need to send a message (call the method) to the object to execute the code in the method. That is to say, we You only need to know the name of the method and the parameters passed in (the external view of the method), but do not need to know the implementation details inside the method (the internal view of the method).
+
+### 1.8 Inheritance and Polymorphism
+
+* Inheritance
+	*  Let subclass ingerit properties and methods directly from super class.
+* Polymorphism
+	* After inheriting the methods of parent class, subclass can implement a new version of these method.(Method Overwride)We call this method different subclass objects will showdifferent behaviors.
 
 
+```python
+from abc import ABCMeta, abstractmethod
+
+# create a abstract class, can't create instance
+class Pet(object, metaclass=ABCMeta):
+    """宠物"""
+    def __init__(self, nickname):
+        self._nickname = nickname
+    @abstractmethod         # abstract method, subclass need overwrite
+    def make_voice(self):
+        """发出声音"""
+        pass
+
+# Inheritance syntax:  subclass(superclass)
+class Dog(Pet):
+    """狗"""
+    def make_voice(self):
+        print('%s: 汪汪汪...' % self._nickname)
 
 
+class Cat(Pet):
+    """猫"""
+    def make_voice(self):
+        print('%s: 喵...喵...' % self._nickname)
 
-### 1.3 数据类
+def main():
+    pets = [Dog('旺财'), Cat('凯蒂'), Dog('大黄')]
+    for pet in pets:
+        pet.make_voice()
+
+if __name__ == '__main__':
+    main()
+```
+
+
+```python
+"""
+Inheritance 
+"""
+# Single
+class DerivedClassName(modname.BaseClassName):
+	pass
+
+# Mutiple
+class DerivedClassName(Base1, Base2, Base3):
+    <statement-1>
+```
+### 1.9 dataclass
+
+maybe it used to connect data for database
+
 ```python
 # dataclass 注解
 from dataclasses import dataclass
@@ -343,81 +410,5 @@ class Employee:
 >>> john.salary
 1000
 ```
-### 1.4 继承
-```python
-# 继承
-class DerivedClassName(modname.BaseClassName):
-	pass
 
-# 多继承
-class DerivedClassName(Base1, Base2, Base3):
-    <statement-1>
-```
-### 1.5 变量
-```python
-# 自定义私有变量  __变量名  在类里会自动变为 _ClassName__变量名
-# MappingSubclass 使用 update() 就是自己的方法，使用 __init__就是Mapping的updata()方法
-class Mapping:
-    def __init__(self, iterable):
-        self.items_list = []
-        self.__update(iterable)
-    def update(self, iterable):
-        for item in iterable:
-            self.items_list.append(item)
-    __update = update   # private copy of original update()
 
-class MappingSubclass(Mapping):
-
-    def update(self, keys, values):
-        # provides new signature for update()
-        # but does not break __init__()
-        for item in zip(keys, values):
-            self.items_list.append(item)
-```
-
-### 1.6 迭代器 & 生成器
-
-```python
-#  for in 遍历底层调用的都是迭代器，需要用的时候官网
-for element in [1, 2, 3]:
-    print(element)
-for element in (1, 2, 3):
-    print(element)
-for key in {'one':1, 'two':2}:
-    print(key)
-for char in "123":
-    print(char)
-for line in open("myfile.txt"):
-    print(line, end='')
-
-# 迭代器 iterator : 
-mytuple = ("apple","banana","cherry")
-myit = iter(mytuple)                # iter() 将 元组变成一个迭代器
-print(next(myit))                   # 使用 next() 可以一致访问迭代器的下一个元素
-print(next(myit))
-print(next(myit))
-print(next(myit))                   # 报错
-
-# 迭代器遍历
-myit = iter(("apple","banana","cherry"))
-for i in myit:
-	print(i)
-
-# 返回有限元素的迭代器元素个数，最快的方法
-len(list(myit))
-
-# 生成器 yield ，用于返回一个迭代器
-def reverse(data):
-    for index in range(data, -1, -1):
-        yield index                       
-# 使用推导式实现上述 reverse(data)
-lambda x : (yield data[index] for index in range(len(x) -1 , -1, -1))
-
-for char in reverse('golf'):
-    print(char)  # f l o g
-
-# 生成器表达式   类似列表推导式，只是由()包含，一般直接用于外部函数
-sum(i*i for i in range(10))               # sum 285
-data = 'golf'
-list(data[i] for i in range(len(data)-1, -1, -1)) # ['f', 'l', 'o', 'g']
-```

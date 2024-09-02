@@ -547,17 +547,38 @@ print(s2.isalnum())  # True
 ```python
 """
 Format string
+	* Control length
+	* zfill
+	* center and just
+	* dict format
 """
+# Control length， USE f""
+year = 2016
+event = 'Referendum'
+f'Results of the {year:10} {event:15}'
+'Results of the 2016       Referendum     '
+
+# zfill (include decimal point and plus and minus signs)
+print('33'.zfill(5))      # 00033
+print('-33'.zfill(5))     # -0033
+
+# center and just
 s = 'hello, world'
 print(s.center(20, '*'))  # ****hello, world****
 print(s.rjust(20))        #         hello, world
 print(s.ljust(20, '~'))   # hello, world~~~~~~~~
-print('33'.zfill(5))      # 00033
-print('-33'.zfill(5))     # -0033
 a = 321
 b = 123
 print(f'{str(a).zfill(5)} * {str(b).zfill(5)} = {a * b}')     # 00321 * 00123 = 39483
+
+
+# dict format
+table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
+print('Jack: {Jack:d}; Sjoerd: {Sjoerd:d}; Dcab: {Dcab:d}'.format(**table))
+	# Jack: 4098; Sjoerd: 4127; Dcab: 8637678
 ```
+
+
 
 ```python
 """
