@@ -845,7 +845,7 @@ for f in sorted(set(basket)):
     print(f)
 ```
 
-## 7 Case of Data Structure Exercises
+## 7 Case of Data Structure Practice
 
 ```python
 """Display marquee text on the screen"""
