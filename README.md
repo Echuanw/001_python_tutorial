@@ -4,17 +4,19 @@
 
 
 # how to run this project
-Env :
-1. VSCode 
-2. VSCode Extension:
+Essential Env:
+1. Install VSCode
+2. Install Python 3.11.9
+3. Install Git 2.46.0
+4. VSCode Install Extension:
     * Python
     * Jupyter
-3. Git
 
-
+Clone Repository:
 1. clone this repository to your VSCode 
 2. create .venv and use requirement.txt to install package
 
+Then you can run script....
 
 
 
