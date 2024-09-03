@@ -1,11 +1,8 @@
-## 1 Dir Operation
-
-
-## 2 File Operation
+## 1 File Operation
 
 ### 1.1 File description
 
-we often encounter scenarios where data is [persisted](https://baike.baidu.com/item/%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96) , and the most direct and simple way to achieve data persistence is to save the data to a file.
+we often encounter scenarios where data is persisted , and the most direct and simple way to achieve data persistence is to save the data to a file.
 
 | operating mode | specific meaning                                                   |
 | -------------- | ------------------------------------------------------------------ |
@@ -17,33 +14,68 @@ we often encounter scenarios where data is [persisted](https://baike.baidu.com/
 | `'t'`          | text mode (default)                                                |
 | `'+'`          | Update (can both read and write)                                   |
 
-![](assets/note_image/image-20240902193324693.png)
+![600](assets/note_image/image-20240902193324693.png)
 
 ### 1.2 Read and write text files
 
 ```python
 """
-Read text files
+try ... except ... finally : make the code robust and fault-tolerant
+"""
+def main():
+    f = None
+    try:
+        f = open('../assets/script_resource/happy.txt', 'r', encoding='utf-8')
+        print(f.read())
+    except FileNotFoundError:
+        print('Unable to open the specified file!')
+    except LookupError:
+        print('An unknown encoding has been specified!')
+    except UnicodeDecodeError:
+        print('Decoding error while reading the file!')
+    finally:
+        if f:
+            f.close()
+
+if __name__ == '__main__':
+    main()
+```
+
+```python
+"""
+Read text files three ways:
+    open()                : return a file object
+    with open(filename, mode, encoding=None)
+        with              : Even if an exception occurs, the document can still be closed properly. Without `with`, you need to use `f.close()` to close the document.
+        mode              : w : only write;  a : open file and append;  r+ : read and write; no_mode : equals to r, only read
+                          : b read as binary： 如 wb rb rb+
+        encoding          : suggest "utf-8"
+    read()                : read all file at once 
+    read(size)            : read size characters（string）或 size byte（binary）
+    readlines()           : read line by line, return line list
+    for_in loop read line : read line by line
+    write(string or binary)  write to file by string or binary
 """
 import time
 
 def main():
-    # read total file
-    with open('致橡树.txt', 'r', encoding='utf-8') as f:
+    # read all file at once 
+    with open('../assets/script_resource/happy.txt', 'r', encoding='utf-8') as f:
         print(f.read())
+    print()
+    
+    # read by line 
+    with open('../assets/script_resource/happy.txt', encoding='utf-8') as f:
+        lines = f.readlines()            # return list
+        print(''.join(lines))
+    print()
 
     # for_in loop read
-    with open('致橡树.txt', mode='r') as f:
+    with open('../assets/script_resource/happy.txt', mode='r', encoding='utf-8') as f:
         for line in f:
             print(line, end='')
             time.sleep(0.5)
     print()
-
-    # read by line 
-    with open('致橡树.txt') as f:
-        lines = f.readlines()
-    print(lines)
-    
 
 if __name__ == '__main__':
     main()
@@ -57,16 +89,16 @@ read image file by read and write binary
 """
 def main():
     try:
-        with open('guido.jpg', 'rb') as fs1:
+        with open('../assets/script_resource/test.png', 'rb') as fs1:       # use rb , wb means read and write by binary format
             data = fs1.read()
-            print(type(data))  # <class 'bytes'>
-        with open('吉多.jpg', 'wb') as fs2:
+            print(type(data))                      # <class 'bytes'>
+        with open('../assets/script_resource/test_copy.png', 'wb') as fs2:
             fs2.write(data)
     except FileNotFoundError as e:
-        print('指定的文件无法打开.')
+        print('Unable to open the specified file.')
     except IOError as e:
-        print('读写文件时出现错误.')
-    print('程序执行结束.')
+        print('Error occurred while reading or writing the file.')
+    print('Program execution has ended.')
 
 
 if __name__ == '__main__':
@@ -75,145 +107,212 @@ if __name__ == '__main__':
 
 ### 1.4 Read and write JSON files
 
-| JSON                | Python       |
-| ------------------- | ------------ |
-| object              | dict         |
-| array               | list         |
-| string              | str          |
-| number (int / real) | int / float  |
-| true / false        | True / False |
-| null                | None         |
+* save the data in a list or dictionary to a JSON file
 
-|Python|JSON|
-|---|---|
-|dict|object|
-|list, tuple|array|
-|str|string|
-|int, float, int- & float-derived Enums|number|
-|True / False|true / false|
-|None|null|
+| JSON                | Python                                 |
+| ------------------- | -------------------------------------- |
+| object              | dict                                   |
+| array               | list, tuple                            |
+| string              | str                                    |
+| number (int / real) | int, float, int- & float-derived Enums |
+| true / false        | True / False                           |
+| null                | None                                   |
 
+**json function**
 
+- `dump`- **Serialize** Python objects **into JSON files** 
+- `dumps`- Process Python objects into JSON-formatted **strings**
+- `load`- **Deserialize JSON file** into **objects**
+- `loads`- **Deserialize** the contents of the **string** **into a Python object**
 
 ```python
-"""
-use json module in Python to save the dictionary or list to a file in JSON format.
-"""
 import json
-
 
 def main():
     mydict = {
-        'name': '骆昊',
-        'age': 38,
-        'qq': 957658,
-        'friends': ['王大锤', '白元芳'],
-        'cars': [
-            {'brand': 'BYD', 'max_speed': 180},
-            {'brand': 'Audi', 'max_speed': 280},
-            {'brand': 'Benz', 'max_speed': 320}
+        "name": "王二觉",
+        "age": 38,
+        "qq": 957658,
+        "friends": ["Echuan", "Echo"],
+        "cars": [
+            {"brand": "BYD", "max_speed": 180},
+            {"brand": "Audi", "max_speed": 280},
+            {"brand": "Benz", "max_speed": 320}
         ]
     }
     try:
-        with open('data.json', 'w', encoding='utf-8') as fs:
-            json.dump(mydict, fs)
+        with open('../assets/script_resource/write_data.json', 'w', encoding='utf-8') as fs:
+            json.dump(mydict, fs, ensure_ascii=False)            # To properly save Chinese characters, Add ensure_ascii=False.
     except IOError as e:
         print(e)
-    print('保存数据完成!')
+    print('Save data Complete!')
 
-
+    try:
+        with open('../assets/script_resource/write_data.json', 'r', encoding='utf-8') as fs:
+            json_obj = json.load(fs)
+            print(json.dumps(json_obj, ensure_ascii=False))       # To properly display Chinese characters, Add ensure_ascii=False.
+            print(json_obj)                                       # Directly output the object
+    except IOError as e:
+        print(e)
+    print('Read data Complete!')
+    
 if __name__ == '__main__':
     main()
-
 ```
 
-The json module mainly has four important functions, namely:
+## 2 Dir Operation
 
-- `dump`- Serialize Python objects into files in JSON format
-- `dumps`- Process Python objects into JSON-formatted strings
-- `load`- Deserialize JSON data in the file into objects
-- `loads`- Deserialize the contents of the string into a Python object
+### 2.1 os and  shutil module
 
-
-
-## 7、输入输出格式化
-
-### 7.1 格式化字符串
 ```python
-# 变量格式化输出字符串,在字符串开头的引号/三引号前添加 `f` 或 `F`
-# 控制长度，小数长度，添加其余字符 {变量:整数长度.小数长度[其余字符]}
->>> year = 2016
->>> event = 'Referendum'
->>> f'Results of the {year:10} {event:15}'
-'Results of the 2016       Referendum     '
+# os module，Interact with the operating system
+import os
+os.getcwd()                      # get current working directory  'C:\\Python311'
+os.chdir('/server/accesslogs')   # Change working directory
+os.system('mkdir today')         # mkdir in the system shell
+dir(os)
+help(os)           # <returns an extensive manual page created from the module's docstrings>
 
-# 0填充  zfill(含符号和小数点的总长度)
->>> '12'.zfill(5)
-'00012'
->>> '-3.14'.zfill(7)
-'-003.14'
+# shutil module, Advanced file handling and directory management
+```
 
-#  格式化字符串 str.format() 
->>> yes_votes = 42_572_654
->>> no_votes = 43_132_495
->>> percentage = yes_votes / (yes_votes + no_votes)
->>> '{:-9} YES votes  {:2.2%}'.format(yes_votes, percentage)
-' 42572654 YES votes  49.67%'
-# str.format() 格式化字面值
->>> import math
->>> print(f'The value of pi is approximately {math.pi:.3f}.')
-The value of pi is approximately 3.142.
-# str.format() 控制位置
->>> print('{0} and {1}'.format('spam', 'eggs'))
-spam and eggs
->>> print('{1} and {0}'.format('spam', 'eggs'))
-eggs and spam
+### 2.2 Operate Dir basic
 
-# 直接变成字符串
->>> s = 'Hello, world.'
->>> str(s)
-'Hello, world.'
->>> repr(s)
-"'Hello, world.'"
->>> str(1/7)
-'0.14285714285714285'
+In Python, operations for handling directories and files can be performed using the `os` and `shutil` modules from the standard library.
+
+- **Check path is file or dir**
+- **Traverse Directory**
+- **Create Directory**
+- **Delete Directory**
+- **Find Directory**`
+
+```python
+"""
+    genericpath.exists(path) : Does a path exist?
+    genericpath.isfile(path) : Is a path a file?
+    genericpath.isdir(path)  : Is a path a directory?
+"""
+import genericpath 
+directory = '../script' 
+print("genericpath.exists() show : " + str(genericpath.exists(directory)))
+print("genericpath.isfile() show : " + str(genericpath.isfile(directory)))
+print("genericpath.isdir() show : " + str(genericpath.isdir(directory)))
 ```
 
 ```python
-# 字典格式化
->>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
->>> print('Jack: {Jack:d}; Sjoerd: {Sjoerd:d}; Dcab: {Dcab:d}'.format(**table))
-Jack: 4098; Sjoerd: 4127; Dcab: 8637678
+"""
+Traverse Directory
+    os.listdir(dir_path) : Only traverse one level, return filename
+    os.walk(dir_path)    : Traverse the entire directory tree, return three tuple
+"""
+import os 
+directory = '../script' 
+print("os.listdir() show:")
+for filename in os.listdir(directory): 
+    print(filename)                              # traverse one level and print all file_name and subdir 
+
+print()
+print("os.walk() show:")
+for dirpath, dirnames, filenames in os.walk(directory):   # show by dir
+    print("Current Directory:", dirpath)         
+    print("Directories:", dirnames) 
+    print("Files:", filenames)
+
+"""
+os.walk() show:
+
+Current Directory: ../script
+Directories: ['__pycache__']
+Files: ['006_Python3_IO&Exceptions.ipynb', 's002_python3_basic_syntax.ipynb', 's003_practice_tic_tac_toe.py', 's003_Python3_Data_Structure.ipynb', 's004_Python3_Function&Moudule.ipynb', 's004_sample_module1.py', 's004_sample_module2.py', 's004_sample_module3.py', 's005_Python3_OOP.ipynb']
+
+Current Directory: ../script\__pycache__
+Directories: []
+Files: ['s004_sample_module1.cpython-311.pyc', 's004_sample_module2.cpython-311.pyc', 's004_sample_module3.cpython-311.pyc']
+"""
 ```
 
-### 7.2 读写文件
 ```python
-# 读文件  open() 返回一个 file object
-# with open(filename, mode, encoding=None)
-	# with : 即使发生异常文档也能正常关闭，没有要使用f.close()关闭文档
-	# mode : w 只写入  a 打开文件追加  r+ 进行读写  省略 r 只读
-	#        b 以二进制模式读取： 如 wb rb rb+
-	# encoding 建议 "utf-8"
-with open('workfile', encoding="utf-8") as f:
-    read_data = f.read()
+"""
+Create Directory
+    `os.mkdir()` to create a single directory  
+    `os.makedirs()` to create intermediate directories as needed
+"""
+import os
 
-# f.read(size)   size 个字符（文本）或 size 个字节（二进制）
-# f.readline()  读一行
-# f.write(string or binary)  写入字符串
-```
-### 7.3 json读写
-json 相对于普通text，可以区分数字类型
-```python
-# JSON文件必须以UTF-8编码
->>> import json
->>> x = [1, 'simple', 'list']
->>> json.dumps(x)       # 将json对象序列化保存为 text file
-'[1, "simple", "list"]' 
-```
-## 8、异常
+already_exists_dir = '../assets/script_resource/'
+new_directory = already_exists_dir + 'test_mkdir'
+new_directories = already_exists_dir + 'test_mkdir/parent_directory/child_directory'
 
-### 8.1 异常处理
+os.mkdir(new_directory)       # create a single directory
+os.makedirs(new_directories)  # create intermediate directories as needed
+```
+
 ```python
+"""
+Delete Directory 
+    * os.rmdir() to remove a single empty directory 
+    * shutil.rmtree() to remove a directory and all its contents.
+"""
+import os
+import shutil
+
+already_exists_dir = '../assets/script_resource/'
+empty_directory = already_exists_dir + 'test_mkdir/parent_directory/child_directory'
+non_empty_directory = already_exists_dir + 'test_mkdir'
+
+os.rmdir(empty_directory)           # remove a single empty directory
+shutil.rmtree(non_empty_directory)  # remove a directory and all its contents
+```
+
+```python
+"""
+Find Directory
+    os.walk() + if , to travelse and find
+    os.path.exists()` to check if a specific directory exists.
+    glob.glob('*.py') : find file by Unix style pathname pattern expansion
+        - `*.txt`：匹配所有以 `.txt` 结尾的文件。
+        - `subdir/*.py`：匹配 `subdir` 子目录下的所有 `.py` 文件。
+        - `**/*.py`：递归匹配当前目录及所有子目录下的 `.py` 文件（需要使用 `glob.glob('**/*.py', recursive=True)`）。
+"""
+import glob
+import os
+
+directory = '../assets/script_resource/happy.txt'
+
+if os.path.exists(directory):              # Determine whether file or dir exists
+    print("Directory exists.")
+else:
+    print("Directory does not exist.")
+    
+glob_path = '../script/*.py'
+glob.glob('*.py')                           # ['s003_practice_tic_tac_toe.py', 's004_sample_module1.py', 's004_sample_module2.py', 's004_sample_module3.py']
+```
+
+### 2.3 shutil Advanced handling
+
+```python
+"""
+shutil : Advanced file handling and directory management
+"""
+import shutil
+copy_path = '../assets/script_resource/copy'
+move_path = '../assets/script_resource/move'
+if not os.path.exists(copy_path):              # Determine whether file or dir exists
+    os.makedirs(copy_path)
+if not os.path.exists(move_path):              # Determine whether file or dir exists
+    os.makedirs(move_path)
+shutil.copyfile('../assets/script_resource/happy.txt', copy_path + '/happy_copy.txt')               # copy move won't create dir
+shutil.move('../assets/script_resource/copy/happy_copy.txt', move_path + '/happy_move.txt')        
+```
+
+## 3 Exception
+
+### 3.1 Exception handle
+
+```python
+"""
+try ... except ... finally ...
+"""
 import sys
 try:
     f = open('myfile.txt')
@@ -227,11 +326,16 @@ except Exception as err:
     print(f"Unexpected {err=}, {type(err)=}")
     raise
 finally:
-    print('Goodbye, world!')  # finally 同 Java
+    print('Goodbye, world!')  
 ```
-### 8.2 主动出发异常
+
+### 3.2 Exception raise
+
 ```python
-# 向上传递异常
+"""
+raise
+"""
+# Propagate upward, passing the exception to upstream for handling
 def func():
     raise ConnectionError 
     
@@ -241,10 +345,3 @@ except ConnectionError as exc:
     raise RuntimeError('Failed to open database') from exc
 ```
 
-### 10.2 glob 文件通配符
-```python
-# 在目录中使用通配符搜索创建文件列表
->>> import glob
->>> glob.glob('*.py') 
-['primes.py', 'random.py', 'quote.py']
-```

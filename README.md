@@ -1,9 +1,6 @@
 # 01_python_tutorial  for recover python
 
-
-
-
-# how to run this project
+# 1 how to run this project
 Essential Env:
 1. Install VSCode
 2. Install Python 3.11.9
@@ -18,14 +15,16 @@ Clone Repository:
 
 Then you can run script....
 
+# 2 Dictionary Describe
 
-
-
-update 006_Python3_IO&Exceptions
-
-
-
-
+* 001_python_tutorial
+    * assets 
+        * note_image
+        * script_resource
+    * script
+        * `*.py`                   python script or jupyter notebook
+    * `*.md`                       python learn note
+    * requirements.txt             python environment package name
 
 
 

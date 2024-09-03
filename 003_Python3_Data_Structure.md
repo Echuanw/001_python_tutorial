@@ -578,8 +578,6 @@ print('Jack: {Jack:d}; Sjoerd: {Sjoerd:d}; Dcab: {Dcab:d}'.format(**table))
 	# Jack: 4098; Sjoerd: 4127; Dcab: 8637678
 ```
 
-
-
 ```python
 """
 pruning operation

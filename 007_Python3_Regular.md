@@ -1,265 +1,278 @@
-## 7、输入输出格式化
 
+> re reference : [re module & Regular Expression](https://docs.python.org/3/library/re.html#)
 
-### 7.2 读写文件
-```python
-# 读文件  open() 返回一个 file object
-# with open(filename, mode, encoding=None)
-	# with : 即使发生异常文档也能正常关闭，没有要使用f.close()关闭文档
-	# mode : w 只写入  a 打开文件追加  r+ 进行读写  省略 r 只读
-	#        b 以二进制模式读取： 如 wb rb rb+
-	# encoding 建议 "utf-8"
-with open('workfile', encoding="utf-8") as f:
-    read_data = f.read()
+## 1 Metacharacters
 
-# f.read(size)   size 个字符（文本）或 size 个字节（二进制）
-# f.readline()  读一行
-# f.write(string or binary)  写入字符串
-```
-### 7.3 json读写
-json 相对于普通text，可以区分数字类型
-```python
-# JSON文件必须以UTF-8编码
->>> import json
->>> x = [1, 'simple', 'list']
->>> json.dumps(x)       # 将json对象序列化保存为 text file
-'[1, "simple", "list"]' 
-```
-## 8、异常
+### 1.1 basic character
 
-### 8.1 异常处理
-```python
-import sys
-try:
-    f = open('myfile.txt')
-    s = f.readline()
-    i = int(s.strip())
-except OSError as err:
-    print("OS error:", err)
-except ValueError:
-    print("Could not convert data to an integer.")
-except Exception as err:
-    print(f"Unexpected {err=}, {type(err)=}")
-    raise
-finally:
-    print('Goodbye, world!')  # finally 同 Java
-```
-### 8.2 主动出发异常
-```python
-# 向上传递异常
-def func():
-    raise ConnectionError 
-    
-try:
-    func()
-except ConnectionError as exc:
-    raise RuntimeError('Failed to open database') from exc
-```
-## 9、类
-### 9.1 作用域和命名空间
-```python
-# nonlocal & global
-def scope_test():
-    def do_local():
-        spam = "local spam"
+```sql
+--    " . " : Match any single character, exclude "\r\n"                                            
+--    " * " : Match many of the preceding expression；0 or any number
+--   " () " : Group the regular expression within the parentheses
+--    " \ " : 转义符，"\n"匹配换行符。序列"\\"匹配"\"，"\("匹配"("。                        \. 或 \* \? \+ 都需要转义
+--    " ? " : Match zero or one of the preceding expression, e.g. "do(es)?" can match "do" or "does"
+--    " + " : Match one or many of the preceding expression, e.g. "zo+" can match "zo" or "zoo", but can not match "Z+"
 
-    def do_nonlocal():
-        nonlocal spam
-        spam = "nonlocal spam"
+--  " xyz " : 占位n，表示字符集合
+--  " x|y " : 占位1，匹配表达式x或y
 
-    def do_global():
-        global spam
-        spam = "global spam"
-
-    spam = "test spam"
-    do_local()                             # 普通的不会改变对象
-    print("After local assignment:", spam) # test spam
-    do_nonlocal()                          # nonlocal 会改变对象
-    print("After nonlocal assignment:", spam) # nonlocal span
-    do_global()                            # global 会改变全局对象，作用域中有时不会影响
-    print("After global assignment:", spam) # nonlocal spam
-
-scope_test()
-print("In global scope:", spam)  # global spam
-```
-### 9.2 类定义
-```python
-# MyClass.i & MyClass.f 可以引用或赋值
-class MyClass:
-    """A simple example class"""   # Myclass.__doc__
-    i = 12345
-    def f(self):
-        return 'hello world'
-    def __init__(self, realpart, imagpart):  # 对象定义方法
-        self.r = realpart
-        self.i = imagpart
-
-# 创建对象
-x = MyClass(1,2)
-
-
-
-# 方法的第一个参数常常被命名为 `self`。 这是一个约定
-class Dog:
-    def __init__(self, name):
-        self.name = name
-        self.tricks = []    # create empty list for each dog
-    def add_trick(self, trick):
-        self.tricks.append(trick)
-
->>> d = Dog('Fido')
->>> e = Dog('Buddy')
->>> d.add_trick('roll over')
->>> e.add_trick('play dead')
->>> d.tricks
-['roll over']
->>> e.tricks
-['play dead']
-```
-### 9.3 数据类
-```python
-# dataclass 注解
-from dataclasses import dataclass
-
-@dataclass
-class Employee:
-    name: str
-    dept: str
-    salary: int
-
->>>
-
->>> john = Employee('john', 'computer lab', 1000)
->>> john.dept
-'computer lab'
->>> john.salary
-1000
-```
-### 9.4 继承
-```python
-# 继承
-class DerivedClassName(modname.BaseClassName):
-	pass
-
-# 多继承
-class DerivedClassName(Base1, Base2, Base3):
-    <statement-1>
-```
-### 9.5 变量
-```python
-# 自定义私有变量  __变量名  在类里会自动变为 _ClassName__变量名
-# MappingSubclass 使用 update() 就是自己的方法，使用 __init__就是Mapping的updata()方法
-class Mapping:
-    def __init__(self, iterable):
-        self.items_list = []
-        self.__update(iterable)
-    def update(self, iterable):
-        for item in iterable:
-            self.items_list.append(item)
-    __update = update   # private copy of original update()
-
-class MappingSubclass(Mapping):
-
-    def update(self, keys, values):
-        # provides new signature for update()
-        # but does not break __init__()
-        for item in zip(keys, values):
-            self.items_list.append(item)
-```
-### 9.6 迭代器 & 生成器
-```python
-#  for in 遍历底层调用的都是迭代器，需要用的时候官网
-for element in [1, 2, 3]:
-    print(element)
-for element in (1, 2, 3):
-    print(element)
-for key in {'one':1, 'two':2}:
-    print(key)
-for char in "123":
-    print(char)
-for line in open("myfile.txt"):
-    print(line, end='')
-
-# 迭代器 iterator : 
-mytuple = ("apple","banana","cherry")
-myit = iter(mytuple)                # iter() 将 元组变成一个迭代器
-print(next(myit))                   # 使用 next() 可以一致访问迭代器的下一个元素
-print(next(myit))
-print(next(myit))
-print(next(myit))                   # 报错
-
-# 迭代器遍历
-myit = iter(("apple","banana","cherry"))
-for i in myit:
-	print(i)
-
-# 返回有限元素的迭代器元素个数，最快的方法
-len(list(myit))
-
-# 生成器 yield ，用于返回一个迭代器
-def reverse(data):
-    for index in range(data, -1, -1):
-        yield index                       
-# 使用推导式实现上述 reverse(data)
-lambda x : (yield data[index] for index in range(len(x) -1 , -1, -1))
-
-for char in reverse('golf'):
-    print(char)  # f l o g
-
-# 生成器表达式   类似列表推导式，只是由()包含，一般直接用于外部函数
-sum(i*i for i in range(10))               # sum 285
-data = 'golf'
-list(data[i] for i in range(len(data)-1, -1, -1)) # ['f', 'l', 'o', 'g']
-```
-## 10、python 标准库
-### 10.1 os & shutil 模块
-```python
-# os 模块，与操作系统交互
->>>import os
->>> os.getcwd()      # current working directory
-'C:\\Python311'
->>> os.chdir('/server/accesslogs')   # Change working directory
->>> os.system('mkdir today')   #  mkdir in the system shell
-0
->>> dir(os)
-<returns a list of all module functions>
->>> help(os)
-<returns an extensive manual page created from the module's docstrings>
-
-# shutil 更高级的处理日常文件和目录管理任务
->>> import shutil
->>> shutil.copyfile('data.db', 'archive.db')
-'archive.db'
->>> shutil.move('/build/executables', 'installdir')
-'installdir'
+--   序列"\\"匹配"\"
+--   " \s " : 匹配空格
+--   " \r " : 匹配一个回车符。等效于 \x0d 和 \cM。
+--   " \n " : 换行符匹配。等效于 \x0a 和 \cJ。
+--   " \f " : 换页符匹配。等效于 \x0c 和 \cL。
+--   " \t " : 制表符匹配。与 \x09 和 \cI 等效。
+--   " \v " : 垂直制表符匹配。与 \x0b 和 \cK 等效。
 ```
 
-### 10.3 sys & [argparse](https://docs.python.org/3/howto/argparse.html) 处理命令行参数
-```python
-# 命令行参数作为列表存储在 sys 模块的 _argv_ 属性中
->>> import sys
->>> print(sys.argv)  
-['demo.py', 'one', 'two', 'three']
 
-# argparse 处理命令行参数
-import argparse
-parser = argparse.ArgumentParser(
-    prog='top',
-    description='Show top lines from each file')
-parser.add_argument('filenames', nargs='+')
-parser.add_argument('-l', '--lines', type=int, default=10)
-args = parser.parse_args()
-print(args)
 
-# python top.py --lines=5 alpha.txt beta.txt
-# args.lines 设为 5
-# args.filenames 设为 ['alpha.txt', 'beta.txt']
+### 1.2 字符组[]
+
+```sql
+-- " [xyz] " : Match any character enclosed in the brackets,    占位1，匹配x, y, z中的一个
+--" [^xyz] " : Match any character not enclosed in the brackets,占位1，不是xyz集合中的字符就行
+-- " [a-z] " : 占位1，区间，匹配a至z范围的字符
 ```
-### 10.4 [re](https://docs.python.org/zh-cn/3.11/library/re.html#module-re) 正则表达式工具
+
+### 1.3 repeat times
+
+```sql
+--   " {n} " : 匹配前面表达式n次
+-- " {n,m} " : 最少匹配n次且最多匹配m次,m不写表示无穷次数
+```
+
+### 1.4 WDS
+
+```sql
+--     序列"\\"匹配"\"
+--    " \d " : 匹配数字，等价于[0-9]
+--    " \D " : 匹配非数字，等价于[^\d]
+--    " \w " : 匹配任意字母数字，等价于[a-zA-Z0-9]
+--    " \W " : 匹配非字母数字，等价于[^\w]
+--    " \s " : 匹配空白字符，等价于[\t\r\n\f\v],注意其中包含空格
+--    " \S " : 匹配非空白字符，等价于[^\s]
+```
+
+### 1.6 边界
+
+```sql
+--    " \b " : 匹配一个字边界，即字与空格间的位置。 \W 为边界，没有字符也算 [^a-zA-Z0-9]
+```
+
+### 1.7 start and end
+
+```sql
+--     " $ " : Matches the end of the string，edf$
+--     " ^ " : Matches the start of the string，^abc
+```
+
+## 2 greedy mode
+
+* `'*'`，`'+'`，`'?'`  are all **greedy**; they match as much text as possible.
+* Adding `"?"` after a quantifier makes it a **non-greedy** (or lazy) quantifier.
+
+```sh
+{m,n}?
+{m,}?
+??
+*?
++? 
+```
+
+
+## 3 Use of Regular Expression
+
+Python provides the `re` module to support regular expression related operations. The following are the core functions in the re module.
+
+| function                                     | illustrate                                                                                                                                                       |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `compile(pattern, flags=0)`                  | Compiling a regular expression returns a regular expression object                                                                                               |
+| `match(pattern, string, flags=0)`            | Matches a string with a regular expression and returns the matching object if successful, otherwise None is returned.                                            |
+| `search(pattern, string, flags=0)`           | The first occurrence of the regular expression pattern in the search string returns a matching object successfully, otherwise None is returned.                  |
+| split(pattern, string, maxsplit=0, flags=0)  | Split string with pattern delimiter specified by regular expression return list                                                                                  |
+| sub(pattern, repl, string, count=0, flags=0) | Use the specified string to replace the pattern matching the regular expression in the original string. You can use count to specify the number of replacements. |
+| fullmatch(pattern, string, flags=0)          | The exact match (from the beginning to the end of the string) version of the match function                                                                      |
+| `findall(pattern, string, flags=0)`          | Finds all patterns in a string that match a regular expression and returns a list of strings                                                                     |
+| `finditer(pattern, string, flags=0)`         | Finds all patterns in a string that match a regular expression and returns an iterator                                                                           |
+| purge()                                      | Clear cache of implicitly compiled regular expressions                                                                                                           |
+| re.I / re.IGNORECASE                         | Ignore case matching tags                                                                                                                                        |
+| re.M / re.MULTILINE                          | multi-line match tag                                                                                                                                             |
+
+> **Note:** These functions in the re module mentioned above can also be replaced by regular expression objects in actual development. If a regular expression needs to be used repeatedly, then compile the regular expression through the compile function first. Formula and create a regular expression object is undoubtedly a wiser choice.
+
+Below we will tell you how to use regular expressions in Python through a series of examples.
+
+### 3.1 re and match object
+
 ```python
->>> import re
->>> re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
-['foot', 'fell', 'fastest']
->>> re.sub(r'(\b[a-z]+) \1', r'\1', 'cat in the the hat')
-'cat in the hat'
+"""
+    regular rxpression object can call function without parttern
+"""
+import re
+text = "Hello, welcome to Python."
+re_obj = re.compile(r'(Hello), (welcome)')
+match = re_obj.search(text)
+if match:
+    print("Full match:", match.group())     # output: Full match: Hello, welcome
+    print("Full match:", match.group(0))     # output: Full match: Hello, welcome
+    print("Full match:", match.group(1))     # output: Full match: Hello
+    print("Full match:", match.group(2))     # output: Full match: welcome
+```
+
+The match object is the result object. When you use methods like `re.match()`, `re.search()`, or `re.finditer()` to find matches, the returned object is a match object.
+
+```python
+"""
+* match.group()        : return Full match
+* match.group(num)     : return group match, group 0 return full match.
+* match.start()        : return Start index
+* match.end()          : return End index
+* match.span()         : return Span
+"""
+import re
+
+text = "Python is great, and Python is easy to learn."
+match = re.search(r'Python', text)
+if match:
+    print("Matched text:", match.group())   # output: Matched text: Python
+    print("Start index:", match.start())    # output: Start index: 0
+    print("End index:", match.end())        # output: End index: 6
+    print("Span:", match.span())            # output: Span: (0, 6)
+```
+
+### 3.2 Find 
+
+* `re.search(pattern, string)`         find the first occurrence of a string or return None
+* `re.findall(pattern, string)`        return list composited by all match string 
+* `re.finditer(pattern, string)`        return iterator composited by all match string 
+
+```python
+"""
+ `re.search(pattern, string)`         find the first occurrence of a string or return None
+"""
+import re
+
+text = "Hello, welcome to the world of Python."
+match = re.search(r'Python', text)
+
+if match:
+    print("Found:", match.group())  # 输出: Found: Python
+else:
+    print("Not found.")
+```
+
+```python
+"""
+re.findall(pattern, string)       # return list composited by all match string 
+"""
+import re
+
+text = "The rain in Spain stays mainly in the plain."
+matches = re.findall(r'in ', text)
+print("Matches found:", matches)   # 输出: Matches found: ['in ', 'in ', 'in ', 'in ']
+```
+
+```python
+"""
+re.finditer(pattern, string)       # return iterator composited by all match string 
+"""
+import re
+
+text = "The rain in Spain stays mainly in the plain."
+matches = re.finditer(r'in', text)
+
+for match in matches:
+    print("Match found at index:", match.start())  #  Match found at index: 6 ....
+```
+
+
+### 3.3 Match
+
+* `re.match(r'regular_expression', string)`
+* `re_obj.match(string)`
+
+```python
+"""
+Vaildate username and password is vaild and provide corresponding prompt messages
+- **Username**: Must consist of letters, digits, or underscores, and have a length of 6 to 20 characters.
+- **password**: Must be a 5 to 12 digit number, with the first digit not being 0.
+"""
+import re
+
+def main():
+    username = input('please input username: ')
+    passwd = input('please input passwd: ')
+    m1 = re.match(r'^[0-9a-zA-Z_]{6,20}$', username)       # use re.match(pattern, string)
+    if not m1:
+        print('please input vaild username.')
+    re_obj = re.compile(r'^[1-9]\d{4,11}$')                # use re_obj.match(string), last is equivalent to this
+    m2 = re_obj.match(passwd)
+    if not m2:
+        print('please input vaild passwd.')
+    if m1 and m2:
+        print('you input is vaild !!!')
+
+if __name__ == '__main__':
+    main()
+```
+
+### 3.4 Split
+
+* `re.split(pattern, string)`   split string by pattern, return list 
+
+```python
+"""
+`re.split(pattern, string)`   split string by pattern, return list 
+"""
+import re
+
+def main():
+    poem = '窗前明月光，疑是地上霜。举头望明月，低头思故乡。'
+    sentence_list = re.split(r'[，。, .]', poem)
+    print(sentence_list)                           # ['窗前明月光', '疑是地上霜', '举头望明月', '低头思故乡','']
+    while '' in sentence_list:
+        sentence_list.remove('')
+    print(sentence_list)                           # ['窗前明月光', '疑是地上霜', '举头望明月', '低头思故乡']
+
+
+if __name__ == '__main__':
+    main()
+```
+
+### 3.5 Replace
+
+* `re.sub(pattern, replace_word, modify_string)`      Replace parts of a string that match a regular expression pattern.
+
+```python
+"""
+`re.sub()`      Replace parts of a string that match a regular expression pattern.
+"""
+import re
+
+def main():
+    sentence = '你丫是傻B吗? 我操你大爷的. Fuck you.'
+    purified = re.sub('[操肏艹]|fuck|shit|傻[B比屄逼叉缺吊屌]|煞笔',
+                      '*', sentence, flags=re.IGNORECASE)  #  flags=re.IGNORECASE 不区分大小写
+    print(purified)  # 你丫是*吗? 我*你大爷的. * you.
+
+if __name__ == '__main__':
+    main()
+```
+
+
+### 3.6 group
+
+* `match(r'()', string)`
+
+```python
+import re
+text = "Hello, welcome to Python."
+re_obj = re.compile(r'(Hello), (welcome)')
+match = re_obj.search(text)
+if match:
+    print("Full match:", match.group())     # output: Full match: Hello, welcome
+    print("Full match:", match.group(0))     # output: Full match: Hello, welcome
+    print("Full match:", match.group(1))     # output: Full match: Hello
+    print("Full match:", match.group(2))     # output: Full match: welcome
 ```
