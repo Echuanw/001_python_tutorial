@@ -192,6 +192,28 @@ items.reverse()
 print(items)  # ['Swift', 'Python', 'Kotlin', 'Java', 'C++']
 ```
 
+### 1.3 Nested List Issues
+
+```Python
+names = ['关羽', '张飞', '赵云', '马超', '黄忠']
+courses = ['语文', '数学', '英语']
+# 录入五个学生三门课程的成绩
+# scores = [[None] * len(courses)] * len(names)                # ERROR_CODE
+scores = [[None] * len(courses) for _ in range(len(names))]    # RIGHT_CODE
+for row, name in enumerate(names):
+  for col, course in enumerate(courses):
+	  scores[row][col] = float(input(f'请输入{name}的{course}成绩: '))
+	  print(scores)
+```
+
+[Python Tutor](http://pythontutor.com/) - VISUALIZE CODE AND GET LIVE HELP
+
+* ERROR_CODE `[[None] * len(courses)] * len(names)`
+	* ![350](assets/note_image/image-20240904163753690.png)
+* RIGHT_CODE `[[None] * len(courses) for _ in range(len(names))]`
+	* ![350](assets/note_image/image-20240904163919350.png)
+
+
 ## 2 Tuple
 
 * Tuple alse is a data sequence composed of **a series of elements** in **a specific order**, so we can use it to save multiple data.
@@ -547,16 +569,35 @@ print(s2.isalnum())  # True
 ```python
 """
 Format string
+	* Control length
+	* zfill
+	* center and just
+	* dict format
 """
+# Control length， USE f""
+year = 2016
+event = 'Referendum'
+f'Results of the {year:10} {event:15}'
+'Results of the 2016       Referendum     '
+
+# zfill (include decimal point and plus and minus signs)
+print('33'.zfill(5))      # 00033
+print('-33'.zfill(5))     # -0033
+
+# center and just
 s = 'hello, world'
 print(s.center(20, '*'))  # ****hello, world****
 print(s.rjust(20))        #         hello, world
 print(s.ljust(20, '~'))   # hello, world~~~~~~~~
-print('33'.zfill(5))      # 00033
-print('-33'.zfill(5))     # -0033
 a = 321
 b = 123
 print(f'{str(a).zfill(5)} * {str(b).zfill(5)} = {a * b}')     # 00321 * 00123 = 39483
+
+
+# dict format
+table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
+print('Jack: {Jack:d}; Sjoerd: {Sjoerd:d}; Dcab: {Dcab:d}'.format(**table))
+	# Jack: 4098; Sjoerd: 4127; Dcab: 8637678
 ```
 
 ```python
@@ -737,6 +778,8 @@ print(set1.isdisjoint(set4))  # False
 
 * dict is a immutable 
 
+### 5.1 Create Dict
+
 ```python
 """
 Create Dict
@@ -744,13 +787,33 @@ Create Dict
 	* Use dict(k=v,...), dict(zip(), 'xxxxx')
 	* dict comprehensions
 """
-scores = {'骆昊': 95, '白元芳': 78, '狄仁杰': 82}
+scores = {'骆昊': 95, '白元芳': 78, '狄仁杰': 82}         # Use `{k:v,...}`
 print(scores)
-items1 = dict(one=1, two=2, three=3, four=4)
+items1 = dict(one=1, two=2, three=3, four=4)             # dict(k=v,...), dict(zip(), 'xxxxx')
 items2 = dict(zip(['a', 'b', 'c'], '123'))
-items3 = {num: num ** 2 for num in range(1, 10)}       
+items3 = {num: num ** 2 for num in range(1, 10)}         # comprehensions
 print(items1, items2, items3)
 ```
+
+```python
+"""
+Case of Create Dict by comprehensions 
+"""
+  prices = {
+      'AAPL': 191.88,
+      'GOOG': 1186.96,
+      'IBM': 149.24,
+      'ORCL': 48.44,
+      'ACN': 166.89,
+      'FB': 208.09,
+      'SYMC': 21.29
+  }
+  # create a new dict where stock value greater than 100
+  prices2 = {key: value for key, value in prices.items() if value > 100}
+  print(prices2)
+```
+
+### 5.2 Use of Dict
 
 ```python
 """
