@@ -1,8 +1,8 @@
 ## 1 concept
 
-A process is a program executed in the OS. The operating system allocates storage space in units of processes(以进程为单位). Each process has its own address space, data stack and other auxiliary(辅助) data for tracking process execution. The operating system manages the execution of all processes. , allocate resources reasonably(合理的) to them.
+A process is a program executed in the OS. The operating system allocates storage space in units of processes[](以进程为单位). Each process has its own address space, data stack and other auxiliary[](辅助) data for tracking process execution. The operating system manages the execution of all processes. , allocate resources reasonably[](合理的) to them.
 A process can create a new process through fork or spawn to perform other tasks.
-However, the new process also has its own independent memory space, so data sharing must be achieved(实现,达到) through the inter-process communication mechanism(通信机制) (IPC, Inter-Process Communication). Specific methods include pipes, signals, sockets, shared memory areas, etc.
+However, the new process also has its own independent memory space, so data sharing must be achieved[](实现,达到) through the inter-process communication mechanism[](通信机制) (IPC, Inter-Process Communication). Specific methods include pipes, signals, sockets, shared memory areas, etc.
 
 A process can also have multiple concurrent execution threads. Since threads operate within the same process, they can share the same context, making information sharing and communication between threads easier compared to processes.
 
@@ -155,9 +155,9 @@ if __name__ == '__main__':
 
 ### 2.2 Lock
 
-  
-When multiple threads share the same resource (variable), it can lead to unpredictable(不可控) results, potentially causing the program to fail or crash. In such cases, a "`lock`" can be useful.
-We can use locks to protect the same resource. **Only the thread that acquires the lock(获得锁) can access this resource**, while other threads that do not have the lock will be blocked until the thread that holds the lock releases it. 
+
+When multiple threads share the same resource (variable), it can lead to unpredictable[](不可控) results, potentially causing the program to fail or crash. In such cases, a "`lock`" can be useful.
+We can use locks to protect the same resource. **Only the thread that acquires the lock[](获得锁) can access this resource**, while other threads that do not have the lock will be blocked until the thread that holds the lock releases it. 
 
 ```python
 from time import sleep
@@ -218,7 +218,7 @@ Whether in multiprocessing or multithreading, as the number of tasks increases, 
 
 When deciding whether to use multitasking, it's important to consider the type of tasks, which can be divided into CPU-bound tasks and I/O-bound tasks.
 
-- **CPU-bound tasks** are characterized(特点) by requiring extensive computations(大量计算), consuming CPU resources, such as video encoding/decoding or format conversion. Although these tasks can be performed using multitasking, as the number of tasks increases, more time is spent on task switching, which lowers the CPU's efficiency. Scripting languages like Python are typically less efficient for these tasks; C is often better suited for this type of work. Python does allow embedding(嵌入) C/C++ code for performance improvements.
+- **CPU-bound tasks** are characterized[](特点) by requiring extensive computations[](大量计算), consuming CPU resources, such as video encoding/decoding or format conversion. Although these tasks can be performed using multitasking, as the number of tasks increases, more time is spent on task switching, which lowers the CPU's efficiency. Scripting languages like Python are typically less efficient for these tasks; C is often better suited for this type of work. Python does allow embedding[](嵌入) C/C++ code for performance improvements.
     
 - **I/O-bound tasks** can benefit from multitasking because it reduces I/O wait time, allowing the CPU to operate more efficiently. A large category of tasks falls into this category, including network applications and web applications, which we will be exploring soon.
 

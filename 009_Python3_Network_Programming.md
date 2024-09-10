@@ -2,15 +2,28 @@
 
 ### 1.1 TCP/IP model
 
-The TCP/IP model logically breaks down%%分解%% the networks we use into four layers, from bottom to top: **Network Interface, Network, Transport, and Application**, as shown in the figure below.
-
+The TCP/IP model logically breaks down[](分解) the networks we use into four layers, from bottom to top: **Network Interface, Network, Transport, and Application**, as shown in the figure below.
 
 ![500](assets/note_image/image-20240903195555194.png)
+
+* Application 
+	* 和具体的包相关。比如 request 包，就会用到 HTTP Protocol。Ftp包用的就是 FTP协议。邮件发送相关的连接用的就是 SMTP 协议。
+	* 编码时用的最多的就是和应用层有关。
+* Transport 
+	* 所有的应用层都会走传输层协议，他是自上而下的。
+	* 如 TCP， UDP协议，它们会提供端到端的接口。
+* Network
+	* 决定了路由选择，如何发包。最常用的就是IP协议
 
 ### 1.2 Network Application Models
 
 1. C/S AND B/S： "C" refers to Client, which is usually an application that needs to be installed on a host operating system; "B" refers to Browser, which is an application software that is typically pre-installed on all graphical operating systems. Access to "S" (Server) can be achieved through either C or B.
 2. Decentralized Network Application Models(去中心化的网络应用模式)。There is no central server or authorization center; each node can communicate directly with other nodes. This model is more resilient and harder to attack compared to traditional centralized models (where all communication must go through a central server) because there is no single point of failure. Common examples of decentralized networks include blockchain technology (such as Bitcoin) and distributed file systems (such as IPFS, InterPlanetary File System). In these systems, all nodes share and maintain the overall state of the network.
+
+### 1.3 Socket
+
+Socket 是操作系统提供的API，可以直接跳过应用层。直接和下面的传输层，网络层打交道。
+可以完成很多想要的功能，甚至创建我们需要的协议。很多聊天工具和网址中的协议都是通过Socket实现的。
 
 ## 2 Developing Based on the HTTP Protocol
 
@@ -61,24 +74,30 @@ if __name__ == '__main__':
 
 ## 3 Developing Based on the Transport Protocol
 
-A socket is a set of application development libraries written in C, primarily used for inter-process communication and network programming, and is widely used in network application development. In Python, you can also use sockets to access transport services provided by the transport layer and develop your own network applications based on this.
+A socket is a set of application development libraries written in C, primarily used for inter-process communication[](进程内部交流) and network programming, and is widely used in network application development. 
+In Python, you can also use sockets to access transport services provided by the transport layer and develop your own network applications based on this.
 
-The sockets used in actual development(实际开发中) can be categorized into three types:
+The sockets used in actual developmentp[](实际开发中) can be categorized into three types:
 1. Stream Sockets (TCP Sockets)
 2. Datagram Sockets
 3. Raw Sockets.
+
+**==Socket programming process==** 
+![600](assets/note_image/image-20240910161507658.png)
+* 左侧 Server  右侧 Client
+
 
 ### 3.1 TCP Sockets
 
 #### 3.1.1 TCP Socket Describe
 
-TCP Sockets are programming interfaces that use the transport services provided by the TCP protocol to achieve network communication(实现网络通信). In Python, you can create a socket object and specify the type attribute as `SOCK_STREAM` to use TCP sockets.
+TCP Sockets are programming interfaces that use the transport services provided by the TCP protocol to achieve network communication[](实现网络通信). In Python, you can create a socket object and specify the type attribute as `SOCK_STREAM` to use TCP sockets.
 
-The server-side program needs to bind the socket object to a specified IP address and port after its creation. The port is not a physical device but an extension of the IP address used to distinguish(区分) different services. For example, we typically(通常) bind HTTP services to port 80, while the MySQL database service is usually bound to port 3306. This way, when the server receives a user request, it can determine whether the request is for the HTTP server or the database server based on the port number.
+The server-side program needs to bind the socket object to a specified IP address and port after its creation. The port is not a physical device but an extension of the IP address used to distinguish[](区分) different services. For example, we typically[](通常) bind HTTP services to port 80, while the MySQL database service is usually bound to port 3306. This way, when the server receives a user request, it can determine whether the request is for the HTTP server or the database server based on the port number.
 
 The range of port values is from 0 to 65535. Ports below 1024 are usually referred to as "well-known ports" (reserved for services like FTP, HTTP, SMTP, etc.; sometimes called "known ports"). Custom services typically do not use these ports unless they are customizing well-known services like HTTP or FTP.
 
-#### 3.1.2 Simple Case
+#### 3.1.2 Simple Case: socket client and server
 
 ```python
 """

@@ -1,4 +1,4 @@
-## 1 OOP
+## 1 OOP Basic
 
 ### 1.1 Define class and use
 
@@ -411,4 +411,20 @@ class Employee:
 1000
 ```
 
+
+## 2 OOP Advanced
+
+In Python, everything is an object.
+
+### 2.1 everything is object
+
+Functions and classes are also objects and are first-class citizens in Python.
+
+类，可以动态修改类的属性。
+
+ first-class citizens
+- Can be assigned to variables
+- Can be added to collection objects
+- Can be passed as parameters to functions
+- Can be returned as values from functions
 
